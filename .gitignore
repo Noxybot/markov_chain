@@ -39,3 +39,5 @@
 *.vs
 build*
 *.user
+*.bat
+Debug

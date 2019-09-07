@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include <string>
 
@@ -11,7 +10,7 @@ public:
 	Markov_chain(const std::string &str);
 	~Markov_chain();
 
-private:
-	std::vector<std::string> Split_string(const std::string &str) const;
+public:
+    static std::vector<std::string> Split_string(const std::string &str); //const;
 };
 

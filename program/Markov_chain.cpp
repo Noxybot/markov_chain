@@ -19,16 +19,16 @@ Markov_chain::~Markov_chain()
 {
 }
 
-std::vector<std::string> Markov_chain::Split_string(const std::string & str) const
+std::vector<std::string> Markov_chain::Split_string(const std::string & str) //const
 {
 	std::vector<std::string> res;
 	std::stringstream str_strm{ str };
 	std::string word;
 	while (str_strm >> word) {
 
-		if (char last = *word.cend(); last == '!' || last == '?' || last == '.') {
+		if (char last = word[word.size() - 1]; last == '!' || last == '?' || last == '.') {
 			res.push_back(word.replace(word.find_first_of(last), word.size() - 1, ""));
-			res.push_back(std::string(last, 1));
+			res.push_back(std::string(1, last));
 		}
 		else
 			res.push_back(word);			
