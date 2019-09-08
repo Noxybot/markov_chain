@@ -55,6 +55,8 @@ void Test_Markov_chain::split_string_data()
                                   << QVector<QString>({"Hello", "!", "How", "are", "you", "?"});
     QTest::newRow("split_test_2") << "Hello!!! How are you???"
                                   << QVector<QString>({"Hello", "!", "How", "are", "you", "?"});
+    QTest::newRow("split_test_3") << "Hello!! How are you??? I am fine."
+                                  << QVector<QString>({"Hello", "!", "How", "are", "you", "?", "I", "am", "fine", "."});
 }
 
 void Test_Markov_chain::split_string()
