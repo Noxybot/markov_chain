@@ -1,18 +1,15 @@
 #include "Markov_chain.h"
-#include <map>
 #include <sstream>
-#include <unordered_map>
 #include <iostream>
 #include <iterator>
 #include <numeric>
+#include <random>
 
 Markov_chain::Markov_chain(const std::string &str)
 {
-	std::map<std::string, int> word_freq;
-	
 	auto splited_str = Split_string(str);
 	int counter = 1; // 0 - START word
-	std::unordered_map<std::string, int> uniq_words;
+	
 	for (const auto &str : splited_str) {
 		if (uniq_words.find(str) == uniq_words.end())
 			uniq_words.emplace(str, counter++);
@@ -44,12 +41,17 @@ Markov_chain::Markov_chain(const std::string &str)
 			if (sum != 0.0)
 				elem /= sum;
 	}
+	index_word_map.emplace(0, "START_WORD");
+	for (const auto &elem : uniq_words)
+		index_word_map.emplace(elem.second, elem.first);
+	index_word_map.emplace(uniq_words.size() + 1, "END_WORD");
+
 }
 
 Markov_chain::~Markov_chain()
 {
 }
-
+//TODO: Add proper splits cases for I`m, don`t , etc. shorcuts
 std::vector<std::string> Markov_chain::Split_string(const std::string & str) //const
 {
 	std::vector<std::string> res;
@@ -65,4 +67,50 @@ std::vector<std::string> Markov_chain::Split_string(const std::string & str) //c
 			res.push_back(word);			
 	}
 	return res;
+}
+
+std::string Markov_chain::Generate_text(int words_count) const
+{
+	std::string res;
+	std::random_device rd;  //Will be used to obtain a seed for the random number engine
+	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	std::uniform_real_distribution<> dis(0.0, 1.0);
+	std::string word = Pick_random_word(probability_matrix[0], dis(gen)); // get a first word
+	if (word.empty()) {
+		std::cerr << "ERORR::TOO FEW WORDS TO BUILD MARKOV CHAIN\n";
+		return std::string();
+	}
+		
+	res += word;
+	res += " ";
+	while (words_count - 1) {
+		std::string next_word = Pick_random_word(probability_matrix[uniq_words.at(word)], dis(gen));
+		if (next_word == "END_WORD") {
+			res.pop_back();
+			res += ". "; // TODO: add difference end-symbols choices
+			word =  Pick_random_word(probability_matrix[0], dis(gen));
+			res += word;
+			res += " ";
+		}
+		else {
+			if (next_word == ",")
+				res.pop_back();
+			res += next_word;
+			res += " ";
+			word = next_word;
+		}
+		
+		--words_count;
+	}
+	return res;
+}
+
+std::string Markov_chain::Pick_random_word(const std::vector<double>& vec, double random_num) const
+{
+	for (int i = 0; i < vec.size(); ++i) {
+		if (random_num < vec[i])
+			return   index_word_map.at(i);
+		random_num -= vec[i];
+	}
+	return std::string();
 }
