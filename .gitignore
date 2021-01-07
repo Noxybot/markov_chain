@@ -37,3 +37,7 @@
 *.vcxproj.filters
 *.vcxproj.user
 *.vs
+build*
+*.user
+*.bat
+Debug
